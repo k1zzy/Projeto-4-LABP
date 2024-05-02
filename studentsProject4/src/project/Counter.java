@@ -26,7 +26,7 @@ public class Counter {
 	
 	public void addClient(Client client) {
 	    totalProcessingDuration += client.getClientProcessingDuration();
-	    currentTime = client.getArrivalTime();
+	    processQueueUntilTime(client.getArrivalTime());
 	    clientQueue.enqueue(client);
 	}
 	

@@ -74,6 +74,7 @@ public class Store {
         while(sc.hasNextLine()) {
             currentLine++;
             String[] event = sc.nextLine().split(" ");
+            clientProcessingDuration = 0;
             
             if (event[1].equals("CLIENT")) { // se o evento for do tipo CLIENT
                 Product[] cart = new Product[event.length - 3];
@@ -150,9 +151,9 @@ public class Store {
         }
     }
     
-    private void processAllCountersFor(int untilTime) {
+    private void processAllCountersFor(int tillTime) {
         for (Counter c : counters) {
-            c.processQueueForDuration(untilTime);
+            c.processQueueForDuration(tillTime);
         }
     }
     
@@ -162,10 +163,10 @@ public class Store {
         
         sb.append("[TS " + client.getArrivalTime() + "] ");
         sb.append("Client " + client.getClientCode() + " assigned to counter " + firstCounterToFinish);
-        sb.append(", processing will take " + counters[firstCounterToFinish].currentClient().getClientProcessingDuration() + ".");
+        sb.append(", processing will take " + client.getClientProcessingDuration() + ".");
         sb.append(EOL);
         
-        return counters[firstCounterToFinish()].getCurrentTime();
+        return counters[firstCounterToFinish].getCurrentTime();
     }
     
     public int firstCounterToFinish() {
@@ -187,7 +188,6 @@ public class Store {
         int first = 0;
         int firstTime = 0;
         int iTime = 0;
-        // TODO NAO POSSO METER OS DOISS IFs JUNTOS PQ SENAO HA VEZES QUE NUNCA ENTRA
         for (int i = 1; i < counters.length; i++) {
             if (!counters[first].isEmpty()) {
                 firstTime = counters[first].getCurrentTime() + counters[first].currentClient().getClientProcessingDuration();

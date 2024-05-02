@@ -7,9 +7,10 @@ public class RunProject4 {
 
     public static void main(String[] args) throws FileNotFoundException {
         RunProject4 runProject4 = new RunProject4();
-        for(int exec = 1; exec <= 5; exec++) {
-            runProject4.execute(exec);
-        }
+//        for(int exec = 1; exec <= 5; exec++) {
+//            runProject4.execute(exec);
+//        }
+        runProject4.execute(5);
     }
 
     public void execute(int exec) throws FileNotFoundException {
