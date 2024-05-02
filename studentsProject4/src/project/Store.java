@@ -118,12 +118,7 @@ public class Store {
         sb.append("All clients have been assigned to a counter!");
         
         while (!areAllCountersDone()) {
-            if (!counters[firstCounterToFinishClient()].isEmpty()) {
-                processAllCountersFor(counters[firstCounterToFinishClient()].currentClient().getClientProcessingDuration());
-            }
-            else {
-                processAllCountersFor(counters[firstCounterToFinish()].currentClient().getClientProcessingDuration());
-            }
+            processAllCountersFor(counters[firstCounterToFinishClient()].currentClient().getClientProcessingDuration());
         }
         
         for (Counter c : counters) {
@@ -186,12 +181,21 @@ public class Store {
         int firstTime = 0;
         int iTime = 0;
         // TODO NAO POSSO METER OS DOISS IFs JUNTOS PQ SENAO HA VEZES QUE NUNCA ENTRA
-        for (int i = 0; i < counters.length; i++) {
-            if (!counters[i].isEmpty() && !counters[first].isEmpty()) {
+        for (int i = 1; i < counters.length; i++) {
+            if (!counters[first].isEmpty()) {
                 firstTime = counters[first].getCurrentTime() + counters[first].currentClient().getClientProcessingDuration();
+            }
+            else {
+                first = i;
+                continue;
+            }
+            if (!counters[i].isEmpty()) {
                 iTime = counters[i].getCurrentTime() + counters[i].currentClient().getClientProcessingDuration();
             }
-            if (!counters[i].isEmpty() && !counters[first].isEmpty() && (iTime < firstTime)) {
+            else {
+                continue;
+            }
+            if (iTime < firstTime) {
                 first = i;
             }
         }
