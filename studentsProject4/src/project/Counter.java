@@ -19,11 +19,19 @@ public class Counter {
 	
 	public void addClient(Client client) {
 	    totalProcessingDuration += client.getClientProcessingDuration();
+	    currentTime = client.getArrivalTime();
 	    clientQueue.enqueue(client);
+	    // TODO ver quando se adiciona dois mudar o tempo e ques
 	}
 	
+	/**
+	 * Devolve o cliente que está a ser processado.
+	 * 
+	 * @requires A fila de clientes não estar vazia
+	 * @return o cliente que está à frente na fila
+	 */
 	public Client currentClient() {
-		return clientQueue.isEmpty() ? null : clientQueue.front();
+		return clientQueue.front();
 	}
 	
 	public void removeClient() {
@@ -45,15 +53,15 @@ public class Counter {
 	    }
 	    currentTime += duration;
 	    // se ja nao houver tempo suf para processar o cliente,
-	    // retira-se o tempo restante ao tempo do cliente
+	    // retira-se a duration ao tempo total de processamento e ao tempo de processamento do cliente
 	    if (!isEmpty()) {
-	        // TODO VER ISTO QUE TA MAL
 	        totalProcessingDuration -= duration;
 	        currentClient().setClientProcessingDuration(currentClient().getClientProcessingDuration() - duration);
 	    }
 	}
 	
 	public void processQueueUntilTime(int time) {
+	    time -= currentTime;
         while (!isEmpty() && time >= currentClient().getClientProcessingDuration()) {
             time -= currentClient().getClientProcessingDuration();
             salesAmount += getSalesAmount(currentClient().getShoppingCart());
@@ -62,11 +70,12 @@ public class Counter {
         }
         currentTime += time;
         if (!isEmpty()) {
+            totalProcessingDuration -= time;
             currentClient().setClientProcessingDuration(currentClient().getClientProcessingDuration() - time);
         }
 	}
 	
-	private double getSalesAmount(Product[] shoppingCart) {
+	private static double getSalesAmount(Product[] shoppingCart) {
         double total = 0;
         for (Product p : shoppingCart) {
             total += p.getProdPrice();
