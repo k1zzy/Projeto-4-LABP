@@ -1,5 +1,7 @@
 package project;
 
+import java.util.Locale;
+
 public class Counter {
 	private final int counterId;
 	private int currentTime;
@@ -15,13 +17,17 @@ public class Counter {
 		this.clientQueue = new LinkedQueue<>();
 		this.salesAmount = 0;
 		this.totalProcessingDuration = 0;
+		this.log = sb;
+		
+		log.append("[TS " + currentTime + "] ");
+        log.append("Counter " + counterId + " open.");
+        log.append(EOL);
 	}
 	
 	public void addClient(Client client) {
 	    totalProcessingDuration += client.getClientProcessingDuration();
 	    currentTime = client.getArrivalTime();
 	    clientQueue.enqueue(client);
-	    // TODO ver quando se adiciona dois mudar o tempo e ques
 	}
 	
 	/**
@@ -47,8 +53,13 @@ public class Counter {
 	    // enquanto existir cliente e enquanto for possivel processa-lo
 	    while (!isEmpty() && duration >= currentClient().getClientProcessingDuration()) {
 	        duration -= currentClient().getClientProcessingDuration();
-	        salesAmount += getSalesAmount(currentClient().getShoppingCart());
+	        salesAmount += getClientSalesAmount(currentClient().getShoppingCart());
 	        currentTime += currentClient().getClientProcessingDuration();
+	        log.append("[TS " + currentTime + "] ");
+	        log.append("Client " + currentClient().getClientCode() + " has finished processing. ");
+	        log.append("Total wait time: " + (currentTime - currentClient().getArrivalTime()) + ". ");
+	        log.append(String.format(Locale.US,"Payment: %.2f€.", getClientSalesAmount(currentClient().getShoppingCart())));
+	        log.append(EOL);
 	        removeClient();
 	    }
 	    currentTime += duration;
@@ -64,8 +75,13 @@ public class Counter {
 	    time -= currentTime;
         while (!isEmpty() && time >= currentClient().getClientProcessingDuration()) {
             time -= currentClient().getClientProcessingDuration();
-            salesAmount += getSalesAmount(currentClient().getShoppingCart());
+            salesAmount += getClientSalesAmount(currentClient().getShoppingCart());
             currentTime += currentClient().getClientProcessingDuration();
+            log.append("[TS " + currentTime + "] ");
+            log.append("Client " + currentClient().getClientCode() + " has finished processing. ");
+            log.append("Total wait time: " + (currentTime - currentClient().getArrivalTime()) + ". ");
+            log.append(String.format(Locale.US,"Payment: %.2f€.", getClientSalesAmount(currentClient().getShoppingCart())));
+            log.append(EOL);
             removeClient();
         }
         currentTime += time;
@@ -75,7 +91,7 @@ public class Counter {
         }
 	}
 	
-	private static double getSalesAmount(Product[] shoppingCart) {
+	private static double getClientSalesAmount(Product[] shoppingCart) {
         double total = 0;
         for (Product p : shoppingCart) {
             total += p.getProdPrice();

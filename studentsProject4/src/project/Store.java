@@ -3,6 +3,7 @@ package project;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class Store {
@@ -116,14 +117,20 @@ public class Store {
         }
         
         sb.append("All clients have been assigned to a counter!");
+        sb.append(EOL);
         
         while (!areAllCountersDone()) {
             processAllCountersFor(counters[firstCounterToFinishClient()].currentClient().getClientProcessingDuration());
         }
         
+        sb.append("All clients have been processed!");
+        sb.append(EOL);
+        
         for (Counter c : counters) {
             totalSalesAmount += c.getSalesAmount();
         }
+
+        sb.append(String.format(Locale.US,"Total sales: %.2f€.", totalSalesAmount));
         
         sc.close();
     }
@@ -150,15 +157,15 @@ public class Store {
     }
     
     public int processClient(Client client) {
-        Counter counter = counters[firstCounterToFinish()]; // TODO SE QUE NAO DA
-        counters[firstCounterToFinish()].addClient(client);
+        int firstCounterToFinish = firstCounterToFinish();
+        counters[firstCounterToFinish].addClient(client);
         
         sb.append("[TS " + client.getArrivalTime() + "] ");
-        sb.append("Client " + client.getClientCode() + " assigned to counter " + counter.getCounterId());
-        sb.append(", processing wil take " + counter.getTotalProcessingDuration() + ".");
+        sb.append("Client " + client.getClientCode() + " assigned to counter " + firstCounterToFinish);
+        sb.append(", processing will take " + counters[firstCounterToFinish].currentClient().getClientProcessingDuration() + ".");
         sb.append(EOL);
         
-        return counter.getCurrentTime();
+        return counters[firstCounterToFinish()].getCurrentTime();
     }
     
     public int firstCounterToFinish() {
